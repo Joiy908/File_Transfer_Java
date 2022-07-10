@@ -1,4 +1,4 @@
-package bean;
+package filetransfer.bean;
 
 import java.util.List;
 

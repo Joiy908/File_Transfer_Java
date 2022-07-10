@@ -1,6 +1,6 @@
 package testBean;
 
-import bean.DirTree;
+import filetransfer.bean.DirTree;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
