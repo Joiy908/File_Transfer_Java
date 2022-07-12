@@ -12,8 +12,7 @@ public class UploadServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        //upload file
-        HttpServletRequest request1 = request;
-        System.out.println(request);
+        response.getWriter().write("hhwer");
+        System.out.println("get a request");
     }
 }
