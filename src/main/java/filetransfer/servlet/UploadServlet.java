@@ -1,5 +1,6 @@
 package filetransfer.servlet;
 
+import com.oracle.webservices.internal.api.message.ContentType;
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -8,6 +9,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.List;
 
@@ -80,6 +82,8 @@ public class UploadServlet extends HttpServlet {
 //                        file = new File( filePath + fileName.substring(fileName.lastIndexOf("\\")+1)) ;
 //                    }
                     fi.write( file );
+
+                    response.setContentType("text/html;charset=UTF-8");
                     response.getWriter().write("Uploaded Filename: " + fileName);
 //                    out.println("Uploaded Filename: " + fileName + "<br>");
                 }
