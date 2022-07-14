@@ -1,8 +1,6 @@
 package filetransfer.servlet;
 
-import filetransfer.bean.DirTree;
 import filetransfer.service.MakeFilePathTreeService;
-import filetransfer.utils.JsonHandler;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
