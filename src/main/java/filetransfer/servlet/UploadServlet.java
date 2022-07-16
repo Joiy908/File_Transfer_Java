@@ -18,7 +18,8 @@ public class UploadServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request, response);
+//        doPost(request, response);
+        response.getWriter().write("plz use GET method.");
     }
 
     @Override

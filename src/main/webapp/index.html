@@ -19,7 +19,7 @@
 <div id="app">
   <!-- Prat I: download file -->
   <h1>File to download</h1>
-  Current dir：{{pathTreeObj.currentDirName}}
+  Current dir: {{pathTreeObj.currentDirName}}
   <button @click="backToParentDir()">back to parent dir</button>
   <br>
   <table>
@@ -118,6 +118,13 @@
         result: ''
       }
     },
+    computed: {
+      uploadUrl() {
+        // encode path and pass as url parameter
+        const pathArray = vm.pathTreeObj.currentDirName.split("/");
+        return 'upload?dirPath=' + pathArray.join('-p*a*t*h-');
+      }
+    },
     methods: {
       upload() {
         // 1. prepare data
@@ -128,7 +135,7 @@
         }
         const data = new FormData();
         data.append('file', fileToUpload);
-        data.append('dirPath', vm.pathTreeObj.currentDirName);
+        // data.append('dirPath', vm.pathTreeObj.currentDirName);
 
         // 2. write onUploadProgress listener
         const config = {
@@ -144,7 +151,7 @@
         };
 
         // 3. make request
-        axios.post('upload', data, config)
+        axios.post(this.uploadUrl, data, config)
           .then(function (res) {
             // alert(rst);
             uploadVm.uploadStatus.isUploading = true;

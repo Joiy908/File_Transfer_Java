@@ -8,15 +8,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 
 public class UploadFileService {
     private static final int MAX_MEM_SIZE = 5120; //5*1024 = 5 KB
     private static String filePath;
-    private static File file;
     // file uploaded threshold, unit: byte
-    private static final long MAX_FILE_SIZE = 10*10240*1000; //10GB
+    private static final long MAX_FILE_SIZE = 10 * 10240 * 1000; //10GB
+
 
     public static void handleUploadedFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
         /*
@@ -34,14 +33,22 @@ public class UploadFileService {
         f.save(os.path.join(dir_path, f.filename))  # 保存文件
         return 'upload successfully!'
          */
-//        response.setContentType("text/html;charset=UTF-8");
         // Get the file location where it would be stored.
-        filePath = request.getServletContext().getInitParameter("ROOT_PATH_LOCAL");
+        String dirPath = decodeDirPath(request.getParameter("dirPath"));
+        String absDirPath = new URLHandler().getAbsFilePath(
+                dirPath, request.getServletContext());
+        if (!new File(absDirPath).isDirectory()) {
+            response.getWriter().write("dirPath is not exist.");
+            return;
+        }
+        filePath = absDirPath;
+
         // Check that we have a file upload request
         response.setContentType("text/html");
         boolean isMultipart = ServletFileUpload.isMultipartContent(request);
         if (!isMultipart) {
             response.getWriter().write("No file part!");
+            return;
         }
 
         DiskFileItemFactory factory = new DiskFileItemFactory();
@@ -60,35 +67,32 @@ public class UploadFileService {
 
         try {
             // Parse the request to get file items.
-            List fileItems = upload.parseRequest(request);
+            List<FileItem> fileItems = upload.parseRequest(request);
 
             // Process the uploaded file items
-            Iterator i = fileItems.iterator();
-
-            while ( i.hasNext () ) {
-                FileItem fi = (FileItem)i.next();
-                if ( !fi.isFormField () ) {
+            for (FileItem f : fileItems) {
+                if (!f.isFormField()) {
                     // Get the uploaded file parameters
-                    String fieldName = fi.getFieldName();
-                    String fileName = fi.getName();
-                    String contentType = fi.getContentType();
-                    boolean isInMemory = fi.isInMemory();
-                    long sizeInBytes = fi.getSize();
+                    String fieldName = f.getFieldName();
+                    String fileName = f.getName();
+                    String contentType = f.getContentType();
+                    boolean isInMemory = f.isInMemory();
+                    long sizeInBytes = f.getSize();
 
                     // Write the file
-                    file = new File( filePath + "/" + fileName) ;
-//                    if( fileName.lastIndexOf("\\") >= 0 ) {
-//                        file = new File( filePath + fileName.substring( fileName.lastIndexOf("\\"))) ;
-//                    } else {
-//                        file = new File( filePath + fileName.substring(fileName.lastIndexOf("\\")+1)) ;
-//                    }
-                    fi.write( file );
+                    File file = new File(filePath + "/" + fileName);
+                    f.write(file);
 
-                    response.getWriter().write("Uploaded Filename: " + fileName);
+                    response.getWriter().write("Uploaded successfully!");
                 }
             }
-        } catch(Exception ex) {
+        } catch (Exception ex) {
             System.out.println(ex);
         }
+    }
+
+    private static String decodeDirPath(String encodedPath) {
+        // ./files/a  <==> .-p*a*t*h-files-p*a*t*h-a
+        return encodedPath.replace("-p*a*t*h-", "/");
     }
 }
