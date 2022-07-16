@@ -34,7 +34,7 @@ public class UploadFileService {
         return 'upload successfully!'
          */
         // Get the file location where it would be stored.
-        String dirPath = decodeDirPath(request.getParameter("dirPath"));
+        String dirPath = request.getParameter("dirPath");
         String absDirPath = new URLHandler().getAbsFilePath(
                 dirPath, request.getServletContext());
         if (!new File(absDirPath).isDirectory()) {
@@ -91,8 +91,4 @@ public class UploadFileService {
         }
     }
 
-    private static String decodeDirPath(String encodedPath) {
-        // ./files/a  <==> .-p*a*t*h-files-p*a*t*h-a
-        return encodedPath.replace("-p*a*t*h-", "/");
-    }
 }
