@@ -14,7 +14,7 @@ public class UploadFileService {
     private static final int MAX_MEM_SIZE = 5120; //5*1024 = 5 KB
     private static String filePath;
     // file uploaded threshold, unit: byte
-    private static final long MAX_FILE_SIZE = 10 * 10240 * 1000; //10GB
+    private static final long MAX_FILE_SIZE = 10737418240L; //10GB
 
 
     public static void handleUploadedFile(HttpServletRequest request, HttpServletResponse response) throws IOException {
@@ -71,20 +71,25 @@ public class UploadFileService {
 
             // Process the uploaded file items
             for (FileItem f : fileItems) {
-                if (!f.isFormField()) {
-                    // Get the uploaded file parameters
-                    String fieldName = f.getFieldName();
-                    String fileName = f.getName();
-                    String contentType = f.getContentType();
-                    boolean isInMemory = f.isInMemory();
-                    long sizeInBytes = f.getSize();
-
-                    // Write the file
-                    File file = new File(filePath + "/" + fileName);
-                    f.write(file);
-
-                    response.getWriter().write("Uploaded successfully!");
+                if (f.isFormField()) {
+                    response.getWriter().write("data structure err.");
+                    return;
                 }
+                // Get the uploaded file parameters
+                String fieldName = f.getFieldName();
+                String fileName = f.getName();
+                String contentType = f.getContentType();
+                boolean isInMemory = f.isInMemory();
+                long sizeInBytes = f.getSize();
+                if (sizeInBytes > MAX_FILE_SIZE) {
+                    response.getWriter().write("Upload fails, file is too large!");
+                    return;
+                }
+                // Write the file
+                File file = new File(filePath + "/" + fileName);
+                f.write(file);
+
+                response.getWriter().write("Uploaded successfully!");
             }
         } catch (Exception ex) {
             System.out.println(ex);
